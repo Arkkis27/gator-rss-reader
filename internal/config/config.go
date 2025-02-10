@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 )
 
@@ -19,6 +20,17 @@ func LoadConfig() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
+
+	// Expand environment variables in the DB URL
+	expandedURL := os.ExpandEnv(cfg.DBUrl)
+
+	// Parse and re-encode the URL to ensure proper escaping
+	u, err := url.Parse(expandedURL)
+	if err != nil {
+		return nil, fmt.Errorf("invalid database URL: %w", err)
+	}
+	cfg.DBUrl = u.String()
+
 	return &cfg, nil
 }
 
@@ -102,7 +114,7 @@ func read() (Config, error) {
 
 func createDefaultConfig() error {
 	defaultCfg := Config{
-		DBUrl:           "postgres://user:pass@localhost:5432/gator?sslmode=disable",
+		DBUrl:           "postgres://gator_user:${GATOR_DB_PASSWORD}@<your_db_server_ip>:5432/gator_db?sslmode=disable",
 		CurrentUserName: "",
 		UserAgent:       "Gator-RSS-Reader/1.0",
 	}

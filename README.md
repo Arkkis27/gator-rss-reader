@@ -25,17 +25,43 @@ A command-line RSS feed aggregator written in Go. Allows users to manage and rea
    goose postgres "your-database-url" up
 
 ### Install from source with git
-```bash
-git clone https://github.com/arkkis27/gator
-cd gator
-go install
-```
+  ```bash
+   git clone https://github.com/arkkis27/gator-rss-reader
+   cd gator-rss-reader/internal/database/sql/schema
+   goose postgres "<your_db_url_as_in_config>" up
+   go install
+  ```
+
+### Database setup
+1. Create a new PostgreSQL database and user with all privileges:
+   ```sql
+   CREATE DATABASE gator_db;
+   CREATE USER gator_user WITH PASSWORD 'your_password';
+   GRANT USAGE, CREATE ON SCHEMA public TO gator_user;
+   GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO gator_user;
+   GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO gator_user;
+   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO gator_user;
+    ```
+2. Set database password as environment variable (for example to ~/.bashrc):
+   ```bash
+   export GATOR_DB_PASSWORD='your_password'
+   ```
+3. Run migrations using goose:
+   ```bash
+   # Navigate to the migrations directory
+   cd gator/internal/database/sql/schema
+   
+   # Run migrations (change your info)
+   goose postgres "postgres://gator_user:${GATOR_DB_PASSWORD}@<your_db_server_ip>:5432/gator_db?sslmode=disable" up
+   ```
 
 ###
-After installing the Gator-RSS-Reader, run "gator" in the terminal. This will error out, but at the same time it creates default configuration file. This is saved to your home folder (path ~/.gatorconfig.json). Open the file and you will see following:
+* After installing the Gator-RSS-Reader, run "gator" in the terminal.
+* This will error out, but at the same time it creates default configuration file. 
+* This is saved to your home folder (path ~/.gatorconfig.json). Open the file and you will see following:
 ```bash
 {
-  "db_url": "postgres://user:pass@localhost:5432/gator?sslmode=disable",
+  "db_url": "postgres://gator_user:${GATOR_DB_PASSWORD}@<your_db_server_ip>:5432/gator_db?sslmode=disable",
   "current_user_name": "",
   "user_agent": "Gator-RSS-Reader/1.0"
 }
@@ -76,4 +102,4 @@ gator unfollow <url>
 
 
 # License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
