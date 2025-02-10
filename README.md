@@ -54,6 +54,9 @@ gator register <username>
 
 # Login
 gator login <username>
+
+# List users
+gator users
 ```
 
 ### Feed management
@@ -70,22 +73,6 @@ gator follow <url>
 # Unfollow feed
 gator unfollow <url>
 ```
-
-
-## Development
-### Project structure
-```bash
-.
-├── cmd/            # Application entrypoints
-├── internal/       # Private packages
-│   ├── commands/   # CLI commands
-│   ├── config/     # App config
-│   ├── database/   # Database operations
-│   ├── rss/        # RSS parsing
-│   └── state/      # RSS parsing 
-```
-
-
 
 
 # License
